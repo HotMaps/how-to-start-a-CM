@@ -92,15 +92,16 @@ class Presentation:
         for index, (action, args, kwargs) in enumerate(self._slides):
             self.index = index
             action(*args, **kwargs)
-        print("Done!")
+        print("Done!\n\n")
+        print("Any questions?\n\n")
+        
 
     def cd(self, path, topic=None):
         input(f"\n{self.prompt(topic)}{self.cmd_color}cd {path}{attr(0)}")
         os.chdir(path)
 
     def interactive(self, cmd, topic=None):
-        cmdx = input(f"\n{self.prompt(topic)}{self.cmd_color}{cmd}{attr(0)}")
-        # TODO: handle cmd from terminal
+        input(f"\n{self.prompt(topic)}{self.cmd_color}{cmd}{attr(0)}")
         sub.call(cmd, shell=True)
 
     def hide(self, cmd, topic=None, debug=False):
@@ -111,19 +112,21 @@ class Presentation:
             sub.call(cmd, shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
 
     def change(self, src, dst, topic=None):
-        cmdx = input(f"\n{self.prompt(topic)}{self.cmd_color}vim {dst}{attr(0)}")
-        # TODO: handle cmd from terminal
-        sub.call(f"vim -d {dst} {src}", shell=True)
+        input(f"\n{self.prompt(topic)}{self.cmd_color}meld {dst}{attr(0)}")
+        sub.call(f"meld {dst} {src}", shell=True)
         shutil.copyfile(src, dst)
 
     def cmd(self, cmd, topic=None, stream=False):
-        cmdx = input(f"\n{self.prompt(topic)}{self.cmd_color}{cmd}{attr(0)}")
-        # TODO: handle cmd from terminal
-
+        input(f"\n{self.prompt(topic)}{self.cmd_color}{cmd}{attr(0)}")
         sub.call(cmd, shell=True)
+        
+    def background(self, cmd, topic=None, stream=False):
+        input(f"\n{self.prompt(topic)}{self.cmd_color}{cmd} &{attr(0)}")
+        sub.Popen(cmd, stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
 
 
 def pr_setup(pr):
+    pr.add("background", "firefox --private-window https://github.com/HotMaps/base_calculation_module", topic="Where to start")
     ## Setup
     pr.add("cmd", "mkdir -p mycm", topic="Create a directory")
     pr.add("cd", "mycm", topic="Enter in the new directory")
@@ -140,7 +143,13 @@ def pr_setup(pr):
     pr.add("hide", "black .")
     # pr.add("hide", "isort -rc -y")
     
+    # directory overview
+    pr.add("cmd", "tree", topic="Show the prj structure")
+    
     pr.add("cmd", "docker-compose -f docker-compose.tests.yml -p hotmaps up --build", topic="Test the code")
+    
+    pr.add("cmd", "bat  docker-compose.tests.yml", topic="Docker compose file")
+    pr.add("cmd", "bat  cm/Dockerfile", topic="Docker file")
 
     pr.add("cmd", "git add .", topic="Add the files")
     pr.add("cmd", "git commit -m 'first commit'", topic="Commit the changes")
@@ -148,26 +157,61 @@ def pr_setup(pr):
 
 def pr_dev(pr):
     ## Start develop
-    pr.add("cmd", "git checkout -b develop", topic="Develop")
+    pr.add("cmd", "git checkout -b develop", topic="Switch to develop branch")
 
-    # directory overview
-    pr.add("cmd", "tree", topic="Develop")
-
-    pr.add("cmd", "bat  cm/requirements.txt", topic="Develop")
-    pr.add("cmd", "bat  cm/app/api_v1/transactions.py", topic="Develop")
-    pr.add("cmd", "bat  cm/app/constant.py", topic="Develop")
-    pr.add("cmd", "bat  cm/app/api_v1/calculation_module.py", topic="Develop")
+    pr.add("cmd", "bat  cm/requirements.txt", topic="Show the depenencies")
+    # pr.add("cmd", "bat  cm/app/api_v1/transactions.py", topic="Develop")
+    pr.add("cmd", "bat  cm/app/constant.py", topic="Show the CM signature")
+    pr.add("cmd", "bat  cm/app/api_v1/calculation_module.py", topic="Show the CM code")
 
     pr.add(
         "change",
         src="../changes/00_constant.py",
         dst="cm/app/constant.py",
-        topic="Develop",
+        topic="Change the CM signature",
     )
+    # list of available datasets
+    pr.add("background", "firefox --private https://docs.google.com/spreadsheets/d/1cGMRWkgIL8jxghrpjIWy6Xf_kS3Dx6LqGNfrCBLQ_GI/edit#gid=1730959780", topic="List all available datasets")
+    pr.add("background", "firefox --private https://gitlab.com/hotmaps", topic="Add a new data set")
+    
+    pr.add(
+        "change",
+        src="../changes/00_calculation_module.py",
+        dst="cm/app/api_v1/calculation_module.py",
+        topic="Change the CM signature",
+    )
+    
+
+    pr.add(
+        "change",  
+        src="../changes/00_tests.py",
+        dst="cm/tests/tests.py",
+        topic="Change the CM signature",
+    )
+    
+    pr.add(
+        "change",  
+        src="../changes/00_transactions.py",
+        dst="cm/app/api_v1/transactions.py",
+        topic="Fix logger error",
+    )
+    
+    pr.add("hide", "black .")
+    # pr.add("hide", "isort -rc -y")
+    
+    pr.add("cmd", "docker-compose -f docker-compose.tests.yml -p hotmaps up --build", topic="Test the code")
+    
+    pr.add("cmd", "git status", topic="Summary")
+
+    pr.add("cmd", "git add cm/app/constant.py cm/app/api_v1/calculation_module.py cm/tests/tests.py cm/app/api_v1/transactions.py", topic="Add the files")
+    pr.add("cmd", "git commit -m 'CMs is done!'", topic="Commit the changes")
+
+    
+    
 
 
 def get_pr():
-    pr = Presentation(total=2)
+    pr = Presentation(total=20)
     pr_setup(pr)
     pr_dev(pr)
     return pr

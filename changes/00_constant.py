@@ -4,7 +4,7 @@ CELERY_BROKER_URL_LOCAL = "amqp://localhost/"
 
 CM_REGISTER_Q = "rpc_queue_CM_register"  # Do no change this value
 
-CM_NAME = "CM - Scale heat and cool density maps"
+CM_NAME = "CM - Scale solar radiation"
 RPC_CM_ALIVE = "rpc_queue_CM_ALIVE"  # Do no change this value
 RPC_Q = "rpc_queue_CM_compute"  # Do no change this value
 CM_ID = 2  # CM_ID is defined by the enegy research center of Martigny (CREM)
@@ -21,27 +21,30 @@ PORT = PORT_DOCKER
 TRANFER_PROTOCOLE = "http://"
 INPUTS_CALCULATION_MODULE = [
     {
-        "input_name": "Multiplication factor",
+        "input_name": "System efficiency",
         "input_type": "input",
-        "input_parameter_name": "multiplication_factor",
-        "input_value": "1",
+        "input_parameter_name": "system_efficiency",
+        "input_value": "0.12",
         "input_priority": 0,
         "input_unit": "",
         "input_min": 0,
-        "input_max": 10,
+        "input_max": 1,
         "cm_id": CM_ID,  # Do no change this value
     },
 ]
 
 
 SIGNATURE = {
-    "category": "Demand",
+    "category": "Supply",
     "cm_name": CM_NAME,
     "layers_needed": ["heat_tot_curr_density",],
     "type_layer_needed": [
-        {"type": "heat", "description": "You can choose the layer of type 'heat'."}
+        {
+            "type": "solar_radiation",
+            "description": "Raster map with the annual solar radiation [kWh/m²/year]",
+        }
     ],
-    "vectors_needed": ["heating_technologies_eu28",],
+    "vectors_needed": [],
     "cm_url": "Do not add something",
     "cm_description": "Do something cool! ;-)",
     "cm_id": CM_ID,
