@@ -1,18 +1,15 @@
-from flask import request, abort, jsonify, url_for, g, flash
-from . import api
-from .. import SIGNATURE, CM_NAME
 import json
-import requests
 import logging
 import os
-from flask import send_from_directory
-from app import helper
-from app import constant
-
-from app.api_v1 import errors
 import socket
-from . import calculation_module
-from app import CalculationModuleRpcClient
+import tempfile
+
+import requests
+from app import CalculationModuleRpcClient, constant, helper
+from flask import request, send_from_directory
+
+from .. import SIGNATURE
+from . import api, calculation_module
 
 LOG_FORMAT = (
     "%(levelname) -10s %(asctime)s %(name) -30s %(funcName) "
@@ -20,11 +17,13 @@ LOG_FORMAT = (
 )
 LOGGER = logging.getLogger(__name__)
 
+if os.environ.get("LOCAL", False):
+    UPLOAD_DIRECTORY = os.path.join(tempfile.gettempdir())
+else:
+    UPLOAD_DIRECTORY = os.path.join("/var", "tmp")
 
-UPLOAD_DIRECTORY = "/var/tmp"
 if not os.path.exists(UPLOAD_DIRECTORY):
     os.makedirs(UPLOAD_DIRECTORY)
-    os.chmod(UPLOAD_DIRECTORY, 0o777)
 
 
 @api.route("/files/<string:filename>", methods=["GET"])
@@ -44,7 +43,7 @@ def register():
     #  ---
     #  definitions:
     #     Color:
-    #     type: string
+    #     type: str
     #  #responses:
     #  200:
     #   description: MWS is aware of the CM
@@ -74,7 +73,7 @@ def savefile(filename, url):
     path = None
     try:
         r = requests.get(url, stream=True)
-    except:
+    except Exception:
         LOGGER.error("API unable to download tif files")
 
     print("image saved", r.status_code)
@@ -93,7 +92,7 @@ def savefile(filename, url):
 def compute():
     # TODO: CM provider must "change the documentation with the information of his CM
 
-    """ compute the Calculation module (CM)from the main web services (MWS)-
+    """compute the Calculation module (CM)from the main web services (MWS)-
     the main web service is sending
         ---
        parameters:
@@ -121,7 +120,7 @@ def compute():
            description: MWS is aware of the CM
            examples:
             results: {"response": {"category": "Buildings", "cm_name": "calculation_module_1", "layers_needed": ["heat_density_tot"], "cm_description": "this computation module allows to ....", "cm_url": "http://127.0.0.1:5002/", "cm_id": 1, "inputs_calculation_module": [{"input_min": 1, "input_value": 1, "input_unit": "none", "input_name": "Reduction factor", "cm_id": 1, "input_type": "input", "input_parameter_name": "multiplication_factor", "input_max": 10}, {"input_min": 10, "input_value": 50, "input_unit": "", "input_name": "Blablabla", "cm_id": 1, "input_type": "range", "input_parameter_name": "bla", "input_max": 1000}]}}
-             """
+    """
 
     print("CM will Compute ")
     # import ipdb; ipdb.set_trace()

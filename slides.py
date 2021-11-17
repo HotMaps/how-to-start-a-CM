@@ -1,13 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
-# How to use
-
-
-"""
 import os
 import shutil
 import subprocess as sub
-import sys
 from datetime import datetime, timedelta
 
 from colored import attr, bg, fg
@@ -94,7 +88,6 @@ class Presentation:
             action(*args, **kwargs)
         print("Done!\n\n")
         print("Any questions?\n\n")
-        
 
     def cd(self, path, topic=None):
         input(f"\n{self.prompt(topic)}{self.cmd_color}cd {path}{attr(0)}")
@@ -119,15 +112,19 @@ class Presentation:
     def cmd(self, cmd, topic=None, stream=False):
         input(f"\n{self.prompt(topic)}{self.cmd_color}{cmd}{attr(0)}")
         sub.call(cmd, shell=True)
-        
+
     def background(self, cmd, topic=None, stream=False):
         input(f"\n{self.prompt(topic)}{self.cmd_color}{cmd} &{attr(0)}")
         sub.Popen(cmd, stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
 
 
 def pr_setup(pr):
-    pr.add("background", "firefox --private-window https://github.com/HotMaps/base_calculation_module", topic="Where to start")
-    ## Setup
+    pr.add(
+        "background",
+        "firefox --private-window https://github.com/HotMaps/base_calculation_module",
+        topic="Where to start",
+    )
+    # Setup
     pr.add("cmd", "mkdir -p mycm", topic="Create a directory")
     pr.add("cd", "mycm", topic="Enter in the new directory")
     pr.add("cmd", "git init", topic="Init an empty git repository")
@@ -142,12 +139,16 @@ def pr_setup(pr):
     # fix the formatting of the base calculation module
     pr.add("hide", "black .")
     # pr.add("hide", "isort -rc -y")
-    
+
     # directory overview
     pr.add("cmd", "tree", topic="Show the prj structure")
-    
-    pr.add("cmd", "docker-compose -f docker-compose.tests.yml -p hotmaps up --build", topic="Test the code")
-    
+
+    pr.add(
+        "cmd",
+        "docker-compose -f docker-compose.tests.yml -p hotmaps up --build",
+        topic="Test the code",
+    )
+
     pr.add("cmd", "bat  docker-compose.tests.yml", topic="Docker compose file")
     pr.add("cmd", "bat  cm/Dockerfile", topic="Docker file")
 
@@ -156,7 +157,7 @@ def pr_setup(pr):
 
 
 def pr_dev(pr):
-    ## Start develop
+    # Start develop
     pr.add("cmd", "git checkout -b develop", topic="Switch to develop branch")
 
     pr.add("cmd", "bat  cm/requirements.txt", topic="Show the depenencies")
@@ -171,43 +172,55 @@ def pr_dev(pr):
         topic="Change the CM signature",
     )
     # list of available datasets
-    pr.add("background", "firefox --private https://docs.google.com/spreadsheets/d/1cGMRWkgIL8jxghrpjIWy6Xf_kS3Dx6LqGNfrCBLQ_GI/edit#gid=1730959780", topic="List all available datasets")
-    pr.add("background", "firefox --private https://gitlab.com/hotmaps", topic="Add a new data set")
-    
+    pr.add(
+        "background",
+        "firefox --private https://docs.google.com/spreadsheets/d/1cGMRWkgIL8jxghrpjIWy6Xf_kS3Dx6LqGNfrCBLQ_GI/edit#gid=1730959780",
+        topic="List all available datasets",
+    )
+    pr.add(
+        "background",
+        "firefox --private https://gitlab.com/hotmaps",
+        topic="Add a new data set",
+    )
+
     pr.add(
         "change",
         src="../changes/00_calculation_module.py",
         dst="cm/app/api_v1/calculation_module.py",
         topic="Change the CM signature",
     )
-    
 
     pr.add(
-        "change",  
+        "change",
         src="../changes/00_tests.py",
         dst="cm/tests/tests.py",
         topic="Change the CM signature",
     )
-    
+
     pr.add(
-        "change",  
+        "change",
         src="../changes/00_transactions.py",
         dst="cm/app/api_v1/transactions.py",
         topic="Fix logger error",
     )
-    
+
     pr.add("hide", "black .")
     # pr.add("hide", "isort -rc -y")
-    
-    pr.add("cmd", "docker-compose -f docker-compose.tests.yml -p hotmaps up --build", topic="Test the code")
-    
+
+    pr.add(
+        "cmd",
+        "docker-compose -f docker-compose.tests.yml -p hotmaps up --build",
+        topic="Test the code",
+    )
+
     pr.add("cmd", "git status", topic="Summary")
 
-    pr.add("cmd", "git add cm/app/constant.py cm/app/api_v1/calculation_module.py cm/tests/tests.py cm/app/api_v1/transactions.py", topic="Add the files")
+    pr.add(
+        "cmd",
+        "git add cm/app/constant.py cm/app/api_v1/calculation_module.py cm/tests/tests.py cm/app/api_v1/transactions.py",
+        topic="Add the files",
+    )
     pr.add("cmd", "git commit -m 'CMs is done!'", topic="Commit the changes")
-
-    
-    
 
 
 def get_pr():

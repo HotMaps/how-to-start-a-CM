@@ -1,0 +1,24 @@
+[tool.bandit]
+skips = ["B404", "B602"]
+
+[tool.poetry]
+name = "how-to-start-a-cm"
+version = "0.1.0"
+description = "Present how to build a Hotmap CM"
+authors = ["Pietro Zambelli <pietro.zambelli@eurac.edu>"]
+license = "Apache2"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+colored = "^1.4.3"
+
+[tool.poetry.dev-dependencies]
+pre-commit = "^2.15.0"
+black = "^21.11b0"
+isort = "^5.10.1"
+flake8 = "^4.0.1"
+bandit = "^1.7.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

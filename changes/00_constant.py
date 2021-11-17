@@ -37,7 +37,9 @@ INPUTS_CALCULATION_MODULE = [
 SIGNATURE = {
     "category": "Supply",
     "cm_name": CM_NAME,
-    "layers_needed": ["heat_tot_curr_density",],
+    "layers_needed": [
+        "heat_tot_curr_density",
+    ],
     "type_layer_needed": [
         {
             "type": "solar_radiation",

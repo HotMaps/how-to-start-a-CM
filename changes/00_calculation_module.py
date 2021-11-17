@@ -1,11 +1,10 @@
-from osgeo import gdal
-import numpy as np
-
-from ..helper import generate_output_file_tif, create_zip_shapefiles
-from ..constant import CM_NAME
-import time
-
 """ Entry point of the calculation module function"""
+import numpy as np
+from osgeo import gdal
+
+from ..constant import CM_NAME
+from ..helper import generate_output_file_tif
+
 
 # TODO: CM provider must "change this code"
 # TODO: CM provider must "not change input_raster_selection,output_raster  1 raster input => 1 raster output"
@@ -68,7 +67,6 @@ def calculation(
     del out_ds
     # output geneneration of the output
     graphics = []
-    vector_layers = []
 
     # TODO to create zip from shapefile use create_zip_shapefiles from the helper before sending result
     # TODO exemple  output_shpapefile_zipped = create_zip_shapefiles(output_directory, output_shpapefile)

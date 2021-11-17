@@ -1,24 +1,23 @@
+import os.path
 import tempfile
 import unittest
-from osgeo import gdal
-import numpy as np
-from werkzeug.exceptions import NotFound
-from app import create_app
-import os.path
 from shutil import copyfile
-from .test_client import TestClient
 
+import numpy as np
+from app import create_app
+from osgeo import gdal
+
+from .test_client import TestClient
 
 if os.environ.get("LOCAL", False):
     UPLOAD_DIRECTORY = os.path.join(
         tempfile.gettempdir(), "hotmaps", "cm_files_uploaded"
     )
 else:
-    UPLOAD_DIRECTORY = "/var/hotmaps/cm_files_uploaded"
+    UPLOAD_DIRECTORY = os.path.join("/var", "hotmaps", "cm_files_uploaded")
 
 if not os.path.exists(UPLOAD_DIRECTORY):
     os.makedirs(UPLOAD_DIRECTORY)
-    os.chmod(UPLOAD_DIRECTORY, 0o777)
 
 
 class TestAPI(unittest.TestCase):
@@ -27,7 +26,9 @@ class TestAPI(unittest.TestCase):
         self.ctx = self.app.app_context()
         self.ctx.push()
 
-        self.client = TestClient(self.app,)
+        self.client = TestClient(
+            self.app,
+        )
 
     def tearDown(self):
 
@@ -37,7 +38,6 @@ class TestAPI(unittest.TestCase):
         raster_file_path = "tests/data/raster_for_test.tif"
 
         ds = gdal.Open(raster_file_path)
-        ds_band = ds.GetRasterBand(1)
         pixel_values = np.nan_to_num(ds.ReadAsArray())
         orig_sum = pixel_values.sum()
 
